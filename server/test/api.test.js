@@ -71,6 +71,11 @@ test('authenticated API: create, join, privacy, authorization, stale actions and
   const left=await request('POST','/rooms/'+code+'/leave','alice',{});assert.equal(left.data.error,'finish_hand_first');
   assert.equal((await request('POST','/account/delete','alice',{})).data.error,'deletion_unavailable');
 });
+test('the player session can travel beside the gateway key',async()=>{
+  const response=await handler(new Request('https://poker.test/functions/v1/poker/me',{headers:{Authorization:'Bearer test-public-key','X-Player-Authorization':'Bearer carol'}}));
+  assert.equal(response.status,200);
+  assert.equal((await request('GET','/me','test-public-key')).status,401);
+});
 test('upstream authentication outage is not reported as an expired account',async()=>{
   const originalError=console.error;console.error=()=>{};
   authFailure=503;

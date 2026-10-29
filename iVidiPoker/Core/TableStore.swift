@@ -13,7 +13,9 @@ import Foundation
         guard AppConfiguration.ready, let url=URL(string:AppConfiguration.apiURL+path) else { throw ServiceError(code:"not_configured") }
         let generation=account.generation
         var req=URLRequest(url:url); req.timeoutInterval=15; req.httpMethod=body == nil ? "GET":"POST"
-        req.setValue("Bearer "+(try await account.token()),forHTTPHeaderField:"Authorization")
+        // The function gateway accepts the public key; the server verifies the player's session itself.
+        req.setValue("Bearer "+AppConfiguration.key,forHTTPHeaderField:"Authorization")
+        req.setValue("Bearer "+(try await account.token()),forHTTPHeaderField:"X-Player-Authorization")
         guard generation==account.generation else {throw CancellationError()}
         if let body { req.httpBody=try JSONSerialization.data(withJSONObject:body);req.setValue("application/json",forHTTPHeaderField:"Content-Type") }
         let (data,response)=try await URLSession.shared.data(for:req)

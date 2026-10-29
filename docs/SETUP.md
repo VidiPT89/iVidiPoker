@@ -41,7 +41,7 @@ npm test
 npm run bundle   # writes dist/poker.js
 ```
 
-3. In the function settings, turn off **Verify JWT with legacy secret**. The project signs sessions with asymmetric keys that this legacy check rejects; the function verifies every token with Supabase Auth itself.
+3. Leave **Verify JWT with legacy secret** on. That gateway check only accepts keys signed with the legacy secret, so the app sends the public key in `Authorization` and the player's session in `X-Player-Authorization`; the function verifies that session with Supabase Auth on every request.
 
 The function uses the variables Supabase provides to every Edge Function, so there is nothing to configure and no secret to copy:
 

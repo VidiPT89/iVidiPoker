@@ -37,7 +37,8 @@ export function createHandler({url,anonKey,serviceKey,fetch=globalThis.fetch}) {
   async function serve(request) {
     const now=Date.now();
     const path=new URL(request.url).pathname.replace(/^(\/functions\/v1)?\/poker/,'')||'/';
-    const authorization=request.headers.get('Authorization')||'';
+    // The Supabase gateway only admits keys signed with the legacy secret, so the app sends the public key there and the player's session here.
+    const authorization=request.headers.get('X-Player-Authorization')||request.headers.get('Authorization')||'';
     const ip=request.headers.get('CF-Connecting-IP')||request.headers.get('X-Forwarded-For')?.split(',').pop().trim()||'unknown';
     const text=request.method==='POST' ? await request.text() : '';
     // Two players acting at once: the later save is refused, so that request runs again on the newer table.

@@ -75,8 +75,8 @@ struct RootView: View {
     private var splashView: some View {
         VStack(spacing:24) {
             Spacer()
-            BrandMark(size:100).shadow(color:Brand.amber.opacity(0.18),radius:40)
-            Text("iVidiPoker").font(.system(size:44,weight:.bold,design:.serif))
+            // The logo already carries the name.
+            BrandMark(size:220).shadow(color:Brand.amber.opacity(0.18),radius:40)
             Text("TEXAS HOLD’EM").font(.caption.weight(.semibold)).tracking(6).foregroundStyle(Brand.amber)
             Spacer()
             CreditLinks().padding(.bottom,36)

@@ -39,10 +39,8 @@ struct GoldButton: ButtonStyle {
 struct BrandMark: View {
     var size:CGFloat=60
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius:size*0.28).fill(Brand.gradient)
-            Image(systemName:"suit.spade.fill").font(.system(size:size*0.55,weight:.black)).foregroundStyle(Brand.ink)
-        }.frame(width:size,height:size).accessibilityHidden(true)
+        Image("Logo").resizable().interpolation(.high).scaledToFit()
+            .frame(width:size,height:size).accessibilityHidden(true)
     }
 }
 struct CardFace: View {

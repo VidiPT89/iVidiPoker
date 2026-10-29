@@ -107,7 +107,6 @@ struct PokerTable: Codable {
         case "already_at_table": return text("Já estás sentado noutra mesa. Sai dela primeiro.", "You are already seated at another table. Leave it first.")
         case "private_practice": return text("As mesas de treino são individuais.", "Practice tables are single-player.")
         case "table_busy", "account_busy": return text("A mesa está a ser atualizada. Tenta daqui a pouco.", "The table is being updated. Try again shortly.")
-        case "server_full": return text("O servidor está cheio. Tenta mais tarde.", "The server is full. Try again later.")
         case "deletion_failed": return text("Não foi possível eliminar a conta. Tenta novamente.", "Your account could not be deleted. Try again.")
         case "user_already_exists", "email_exists": return text("Já existe uma conta com este email. Entra ou recupera a palavra-passe.", "An account with this email already exists. Sign in or reset your password.")
         case "email_address_invalid", "validation_failed": return text("Confirma que o email está correto.", "Check that the email address is correct.")

@@ -10,8 +10,8 @@ iVidiPoker is a social Texas Hold’em game played with virtual chips. It has no
 |---|---|---|
 | Email address | Signing in, confirming your account and recovering your password | Supabase (account service) |
 | Name shown at the table | Identifying you to the other players | Supabase |
-| Account identifier | Linking you to your seat at a table | Supabase and the game server |
-| Table state: seat, chips, cards and recent moves | Running the game | Game server on Cloudflare |
+| Account identifier | Linking you to your seat at a table | Supabase |
+| Table state: seat, chips, cards and recent moves | Running the game | Game server on Supabase |
 
 If you sign in with Apple, Google or Microsoft, that provider shares your email address and, when you allow it, your name. With Sign in with Apple you can choose to hide your email address.
 
@@ -47,8 +47,8 @@ O iVidiPoker é um jogo social de Texas Hold’em com fichas virtuais. Não tem 
 |---|---|---|
 | Email | Entrar, confirmar a conta e recuperar a palavra-passe | Supabase (serviço de contas) |
 | Nome na mesa | Identificar-te perante os outros jogadores | Supabase |
-| Identificador da conta | Associar-te ao teu lugar numa mesa | Supabase e servidor de jogo |
-| Estado da mesa: lugar, fichas, cartas e jogadas recentes | Fazer o jogo funcionar | Servidor de jogo na Cloudflare |
+| Identificador da conta | Associar-te ao teu lugar numa mesa | Supabase |
+| Estado da mesa: lugar, fichas, cartas e jogadas recentes | Fazer o jogo funcionar | Servidor de jogo na Supabase |
 
 Se entrares com a Apple, a Google ou a Microsoft, esse serviço partilha o teu email e, se o permitires, o teu nome. Com o Iniciar sessão com a Apple podes ocultar o teu email.
 

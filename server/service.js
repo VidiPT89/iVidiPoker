@@ -17,20 +17,21 @@ function remove(service,r,id) {
   else {if(r.host===id) r.host=r.players.find(p=>!p.bot).id; r.phase='waiting'; r.board=[]; r.winners=[]; r.refunds=[]; r.showdownRevealed=false; r.log=[]; r.actor=-1; r.players.forEach(p=>{p.cards=[];p.bet=0;p.total=0;});r.version++;}
 }
 
-// Every table lives in one place, as in a single server process; the host decides how tables are stored.
+// Works on the tables it is given; the host decides how tables are loaded and saved.
 export class TableService {
-  constructor(saved,{authURL,publicKey,serviceKey,fetch=globalThis.fetch}) {
+  // cache keeps request limits and verified tokens between instances, so the host can build one service per request.
+  constructor(saved,{authURL,publicKey,serviceKey,fetch=globalThis.fetch,cache={limits:new Map(),identities:new Map(),swept:0}}) {
     if(!authURL || !publicKey) throw new Error('Set SUPABASE_URL and SUPABASE_ANON_KEY');
     if(!authURL.startsWith('https://')) throw new Error('SUPABASE_URL must use HTTPS');
     Object.assign(this,{authURL,publicKey,serviceKey,fetch});
     this.rooms=new Map(saved.map(r=>[r.code,r]));
     this.changed=new Set();
-    this.limits=new Map();
+    this.cache=cache;
+    this.limits=cache.limits;
     // Clients poll every 1.5 seconds; verified tokens are reused briefly instead of asking Supabase each time.
-    this.identities=new Map();
+    this.identities=cache.identities;
     this.deletingUsers=new Set();
     this.deletingRooms=new Set();
-    this.swept=0;
   }
   // Codes of tables to save, or to delete when they no longer exist, since the last call.
   takeChanges() { const codes=[...this.changed]; this.changed.clear(); return codes; }
@@ -69,9 +70,9 @@ export class TableService {
     catch(e) { console.error('Could not advance table:',e.name); }
   }
   sweep(now) {
-    if(now-this.swept<60000) return;
-    this.swept=now;
     for(const [code,r] of this.rooms) if(now-r.updated>86400000 && betweenHands(r) && !this.deletingRooms.has(code)) { this.rooms.delete(code); this.changed.add(code); }
+    if(now-this.cache.swept<60000) return;
+    this.cache.swept=now;
     for(const [key,value] of this.limits) if(value.reset<now) this.limits.delete(key);
     for(const [key,value] of this.identities) if(value.expires<now) this.identities.delete(key);
   }
@@ -99,7 +100,6 @@ export class TableService {
     if(method==='POST' && path==='/account/delete') return await this.deleteAccount(user);
     if(method==='POST' && path==='/rooms') {
       if(this.current(user.id)) throw new GameError('already_at_table');
-      if(this.rooms.size>=1000) throw new GameError('server_full');
       let r; do { r=room(user.id,user.name,data.practice===true); } while(this.rooms.has(r.code));
       if(r.practice) ['Aurora','Duarte','Leonor'].forEach((name,i)=>r.players.push(player('bot-'+i,name,true)));
       this.rooms.set(r.code,r); this.changed.add(r.code);

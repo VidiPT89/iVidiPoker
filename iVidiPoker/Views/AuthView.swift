@@ -77,17 +77,15 @@ struct AuthView: View {
                     run {try await account.signInWithApple(result,nonce:nonce)}
                 }.signInWithAppleButtonStyle(scheme == .dark ? .white : .black).frame(height:50).clipShape(RoundedRectangle(cornerRadius:14))
                     .disabled(busy || !AppConfiguration.ready).id(scheme)
-                HStack(spacing:8) {
-                    provider("Google","google")
-                    provider("Microsoft","azure")
-                }
-                Button(creating ? preferences.text("Já tens conta? Entrar","Already have an account? Sign in"):preferences.text("Ainda não tens conta? Criar conta","New here? Create an account")) {creating.toggle();message=nil;error=nil}.font(.caption).frame(maxWidth:.infinity)
+                let social=[("Google","google"),("Microsoft","azure")].filter {account.providers.contains($0.1)}
+                if !social.isEmpty { HStack(spacing:8) { ForEach(social,id:\.1) {provider($0.0,$0.1)} } }
+                if account.emailSignup || creating { Button(creating ? preferences.text("Já tens conta? Entrar","Already have an account? Sign in"):preferences.text("Ainda não tens conta? Criar conta","New here? Create an account")) {creating.toggle();message=nil;error=nil}.font(.caption).frame(maxWidth:.infinity) }
                 Button(preferences.text("Esqueci-me da palavra-passe","Forgot password")) {recovering=true;creating=false;password="";error=nil;message=nil}.font(.caption).foregroundStyle(.secondary).frame(maxWidth:.infinity)
             } else {
                 Button(preferences.text("Voltar ao início de sessão","Back to sign in")) {recovering=false;error=nil;message=nil}.font(.caption)
             }
             CreditLinks().frame(maxWidth:.infinity).padding(.top,8)
-        }.panel().disabled(busy)
+        }.panel().disabled(busy).task {await account.loadProviders()}
     }
     private func field(_ label:String,text:Binding<String>) -> some View {
         TextField(label,text:text).textFieldStyle(.plain).autocorrectionDisabled().padding(14)

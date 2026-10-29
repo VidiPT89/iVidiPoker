@@ -21,7 +21,7 @@ The strategy only receives the same private view a player sees. Tests change the
 
 ### API
 
-The tests drive the Cloudflare Worker and its Durable Object end to end, with in-memory storage: authentication on every table endpoint, table creation and joining, host-only dealing, private hole cards, reconnection through `/me`, duplicate and stale actions, malformed request bodies, identity-service outages reported as unavailable rather than signed out, account deletion locking the table, reuse of verified tokens while polling, per-address rate limits, bots acting when a table is polled, a failing table rolling back on its own, and tables surviving a restart and being removed from storage when empty.
+The tests drive the Edge Function end to end against an in-memory stand-in for the `rooms` table: authentication on every table endpoint, table creation and joining, host-only dealing, private hole cards, reconnection through `/me`, duplicate and stale actions, malformed request bodies, identity-service outages reported as unavailable rather than signed out, account deletion handing the table to the next host, a save that loses a race running again on the newer table, reuse of verified tokens while polling, per-address rate limits, bots acting when a table is polled, a failing table rolling back on its own, and tables being removed from storage when empty.
 
 ### App
 
@@ -36,4 +36,4 @@ Decoding of real server-generated snapshots, payouts and refunds, quick-bet sizi
 - Check six-player layouts, VoiceOver and large accessibility text sizes on physical devices.
 - Produce signed Release archives, host a privacy policy and complete the store metadata and age rating.
 
-All tables live in one Durable Object, which processes requests one at a time. The free plan's 100,000 requests a day is about 40 player-hours of polling.
+Each table is one Postgres row with a revision number; concurrent saves to the same table are retried, never merged. The free plan's 500,000 function calls a month is about 200 player-hours of polling.

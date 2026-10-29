@@ -1,4 +1,0 @@
-# Copy to .dev.vars for `npm start` (wrangler dev). In production, set secrets with:
-#   npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
-# Server only. Required for in-app account deletion. Never copy into the app.
-SUPABASE_SERVICE_ROLE_KEY=YOUR-SERVER-ONLY-SERVICE-ROLE-KEY

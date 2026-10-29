@@ -39,6 +39,9 @@ private enum SecureStore {
     @Published private(set) var session: Session?
     /// Set after a password-recovery link opens the app, until a new password is chosen.
     @Published var choosingPassword=false
+    /// Sign-in options switched on in Supabase, so a provider can be enabled there without a new build.
+    @Published private(set) var providers: Set<String> = []
+    @Published private(set) var emailSignup=false
     private var webSession: ASWebAuthenticationSession?
     private var refreshTask: Task<Session, Error>?
     private(set) var generation=UUID()
@@ -77,6 +80,13 @@ private enum SecureStore {
         if newAccount { refreshTask?.cancel(); refreshTask=nil; generation=UUID() }
         session=value
         return value
+    }
+    func loadProviders() async {
+        guard let data=try? await request("settings",body:nil,method:"GET"),
+              let settings=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any] else { return }
+        providers=Set(((settings["external"] as? [String:Bool]) ?? [:]).filter(\.value).keys)
+        // Without automatic confirmation, a new account waits for an email the default Supabase mailer only sends to the team.
+        emailSignup=settings["mailer_autoconfirm"] as? Bool ?? false
     }
     func signIn(email: String,password: String) async throws {
         try accept(await request("token?grant_type=password",body:["email":email.trimmingCharacters(in:.whitespacesAndNewlines),"password":password]))

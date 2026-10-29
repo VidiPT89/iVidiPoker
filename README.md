@@ -35,9 +35,9 @@
 | UI | SwiftUI |
 | Platforms | iOS 17+, iPadOS 17+, macOS 14+ |
 | Authentication | Supabase Auth, AuthenticationServices, PKCE, Keychain |
-| Game server | Cloudflare Workers and Durable Objects, no npm dependencies |
+| Game server | Supabase Edge Function, no npm dependencies |
 | Synchronisation | Authenticated HTTPS snapshots, 1.5-second polling |
-| Persistence | Durable Object storage, one key per table |
+| Persistence | Postgres, one row per table with optimistic saves |
 | Project | XcodeGen |
 | Tests | Node.js test runner, native Swift contract checks, GitHub Actions |
 
@@ -46,8 +46,8 @@
 ### Prerequisites
 
 - macOS with Xcode 15+
-- Node.js 22.9+ for the server tests and Wrangler
-- A Supabase project and a Cloudflare account (both free plans) for online play
+- Node.js 22.9+ for the server tests and bundle
+- A Supabase project (free plan) for online play
 
 ### Installation
 
@@ -64,7 +64,7 @@ Select `iVidiPoker-iOS` or `iVidiPoker-macOS` and build (`⌘R`). Choose your si
 ### Online services
 
 1. Follow [Service setup](docs/SETUP.md) to configure Supabase and the Apple, Google and Microsoft providers.
-2. Deploy `server/` to Cloudflare Workers with `npm run deploy`.
+2. Create the `rooms` table with `server/schema.sql` and deploy `server/` as the `poker` Edge Function (see the setup guide).
 3. Copy `Config/Local.xcconfig.example` to `Config/Local.xcconfig` and enter the public URLs and the public Supabase key.
 4. Rebuild the app, create an account, then create or join a table.
 

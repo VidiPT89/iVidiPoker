@@ -7,8 +7,7 @@
     "node": ">=22.9.0"
   },
   "scripts": {
-    "start": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "bundle": "npx --yes esbuild@0.25.10 edge.js --bundle --format=esm --target=es2022 --external:node:* --minify --outfile=dist/poker.js",
     "test": "node --test test/*.test.js",
     "test:exhaustive": "node test/exhaustive.mjs"
   }

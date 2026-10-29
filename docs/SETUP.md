@@ -30,36 +30,38 @@ Official guides:
 
 ## 3. Server
 
-The game server is a Cloudflare Worker with a single Durable Object that holds every table, keeps each table under its own storage key and saves changes before responding. It runs on the Workers Free plan: no server to keep awake and no cold starts. Node.js 22.9 or newer is needed for the tests and Wrangler.
+The game server is a Supabase Edge Function named `poker`, in the same free project as the accounts. Each request loads only the tables it needs from the `rooms` table in Postgres and saves them only if nobody changed them in the meantime; a request that loses that race runs again on the newer table. Node.js 22.9 or newer is needed for the tests and the bundle.
+
+1. Run `server/schema.sql` in the SQL Editor. The table has row level security and no policies, so only the function can read it.
+2. Build the single-file bundle and deploy it as the `poker` function, from the dashboard editor (paste `dist/poker.js` into `index.ts`) or with the Supabase CLI:
 
 ```bash
 cd server
 npm test
-npx wrangler login
-# Edit SUPABASE_URL and SUPABASE_ANON_KEY in wrangler.toml (public values).
-npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY   # server-only, used for account deletion
-npm run deploy
+npm run bundle   # writes dist/poker.js
 ```
 
-| Name | Kind | Purpose |
-|---|---|---|
-| `SUPABASE_URL` | Variable | HTTPS project URL |
-| `SUPABASE_ANON_KEY` | Variable | Public project key used to verify user sessions |
-| `SUPABASE_SERVICE_ROLE_KEY` | Secret | Server-only key for account deletion |
+3. In the function settings, turn off **Verify JWT with legacy secret**. The project signs sessions with asymmetric keys that this legacy check rejects; the function verifies every token with Supabase Auth itself.
 
-For local development, copy `.dev.vars.example` to `.dev.vars` and run `npm start` (`wrangler dev`). Both files stay out of Git.
+The function uses the variables Supabase provides to every Edge Function, so there is nothing to configure and no secret to copy:
 
-`GET /health` is public. Every table endpoint verifies the supplied access token with Supabase Auth; a verified token is reused for up to 30 seconds so that table polling does not query Supabase on every request. Requests are limited per client address (`CF-Connecting-IP`) and per account.
+| Name | Purpose |
+|---|---|
+| `SUPABASE_URL` | HTTPS project URL |
+| `SUPABASE_ANON_KEY` | Public project key used to verify user sessions |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only key for the `rooms` table and account deletion |
 
-Bots and expired turns advance whenever a player polls the table, so idle tables cost nothing. Tables expire 24 hours after the last completed hand. The stored tables include unplayed cards and private hands; they are only reachable through the Durable Object. A lost Durable Object loses the virtual-chip tables, not the Supabase accounts.
+`GET /health` answers without touching the database. Every table endpoint verifies the supplied access token with Supabase Auth; a verified token is reused for up to 30 seconds so that table polling does not query Supabase on every request. Requests are limited per client address and per account.
 
-The free plan allows 100,000 requests a day. Each seated player polls every 1.5 seconds, which is about 2,400 requests an hour.
+Bots and expired turns advance whenever a player polls the table, so idle tables cost nothing. Tables expire 24 hours after the last completed hand. The stored tables include unplayed cards and private hands; they are only reachable with the service-role key.
+
+The free plan includes 500,000 Edge Function calls a month. Each seated player polls every 1.5 seconds, which is about 2,400 calls an hour.
 
 ## 4. App
 
 Copy `Config/Local.xcconfig.example` to `Config/Local.xcconfig` and set:
 
-- `POKER_API_URL`: public HTTPS origin of the poker server, without a trailing slash.
+- `POKER_API_URL`: the function URL, `https://YOUR-PROJECT.supabase.co/functions/v1/poker`, without a trailing slash.
 - `SUPABASE_URL`: project URL, without a trailing slash.
 - `SUPABASE_ANON_KEY`: public project key.
 

@@ -7,3 +7,4 @@ Config/Local.xcconfig
 server/dist/
 node_modules/
 *.log
+server/.wrangler/

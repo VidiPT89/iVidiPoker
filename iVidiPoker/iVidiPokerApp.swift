@@ -66,6 +66,8 @@ struct RootView: View {
         .task(id:store.table?.code) {if store.table != nil {await store.poll()}}
         .sheet(isPresented:$settings) { SettingsView().environmentObject(store).preferredColorScheme(preferences.scheme) }
         .sheet(isPresented:$rules) { RulesView().preferredColorScheme(preferences.scheme) }
+        .sheet(isPresented:$account.choosingPassword) { NewPasswordView().preferredColorScheme(preferences.scheme) }
+        .onOpenURL {url in Task {do {try await account.open(url)} catch {store.error=(error as? ServiceError)?.code ?? "service_unavailable"}}}
         .alert(preferences.text("Não foi possível concluir","Could not complete"),isPresented:Binding(get:{store.error != nil && !settings},set:{if !$0 {store.error=nil}})) {
             Button("OK") {store.error=nil}
         } message: {Text(preferences.error(store.error ?? ""))}

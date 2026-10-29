@@ -6,11 +6,9 @@ struct AuthView: View {
     @EnvironmentObject private var account:Account
     @State private var creating=false
     @State private var recovering=false
-    @State private var recoverySent=false
     @State private var name=""
     @State private var email=""
     @State private var password=""
-    @State private var code=""
     @State private var busy=false
     @State private var message:String?
     @State private var error:String?
@@ -52,24 +50,23 @@ struct AuthView: View {
                     .font(.caption).foregroundStyle(.secondary).padding(12).frame(maxWidth:.infinity,alignment:.leading).background(Brand.amber.opacity(0.08),in:RoundedRectangle(cornerRadius:10))
             }
             if creating && !recovering {field(preferences.text("Nome na mesa","Table name"),text:$name)}
-            field("Email",text:$email).disabled(recovering && recoverySent)
-            if !recovering || recoverySent {
-                if recoverySent {field(preferences.text("Código do email","Email code"),text:$code)}
-                SecureField(recovering ? preferences.text("Nova palavra-passe","New password") : preferences.text("Palavra-passe","Password"),text:$password)
-                    .textContentType(creating || recovering ? .newPassword:.password).textFieldStyle(.plain).padding(14).background(.primary.opacity(0.05),in:RoundedRectangle(cornerRadius:10))
+            field("Email",text:$email)
+            if !recovering {
+                SecureField(preferences.text("Palavra-passe","Password"),text:$password)
+                    .textContentType(creating ? .newPassword:.password).textFieldStyle(.plain).padding(14).background(.primary.opacity(0.05),in:RoundedRectangle(cornerRadius:10))
             }
             if let error {Text(preferences.error(error)).font(.caption).foregroundStyle(.red).accessibilityAddTraits(.updatesFrequently)}
             if let message {Text(message).font(.caption).foregroundStyle(.secondary)}
             Button {run {
                 if recovering {
-                    if recoverySent {try await account.reset(email:email,code:code,password:password)}
-                    else {try await account.recover(email:email);recoverySent=true;message=preferences.text("Consulta o código no teu email.","Check your email for the code.")}
+                    try await account.recover(email:email)
+                    message=preferences.text("Enviámos um link para o teu email. Abre-o neste dispositivo para escolheres uma nova palavra-passe.","We sent a link to your email. Open it on this device to choose a new password.")
                 } else if creating {
                     if try await account.signUp(name:name,email:email,password:password) == false {message=preferences.text("Confirma o teu email e entra na conta.","Confirm your email, then sign in.");creating=false}
                 } else {try await account.signIn(email:email,password:password)}
             }} label: {
-                HStack {if busy {ProgressView().controlSize(.small)};Text(recovering ? preferences.text("Continuar","Continue"):creating ? preferences.text("Criar conta","Create account"):preferences.text("Entrar","Sign in"));Image(systemName:"arrow.right")}
-            }.buttonStyle(GoldButton()).disabled(busy || email.isEmpty || (!recovering && password.isEmpty) || (!recovering && creating && name.trimmingCharacters(in:.whitespaces).isEmpty) || (recovering && recoverySent && (code.isEmpty || password.count<8)) || !AppConfiguration.ready)
+                HStack {if busy {ProgressView().controlSize(.small)};Text(recovering ? preferences.text("Enviar link","Send link"):creating ? preferences.text("Criar conta","Create account"):preferences.text("Entrar","Sign in"));Image(systemName:"arrow.right")}
+            }.buttonStyle(GoldButton()).disabled(busy || email.isEmpty || (!recovering && password.isEmpty) || (!recovering && creating && name.trimmingCharacters(in:.whitespaces).isEmpty) || !AppConfiguration.ready)
             if !recovering {
                 HStack {Rectangle().frame(height:1);Text(preferences.text("ou continua com","or continue with")).fixedSize();Rectangle().frame(height:1)}.foregroundStyle(.secondary.opacity(0.5)).font(.caption)
                 SignInWithAppleButton(creating ? .signUp : .signIn) {request in
@@ -87,7 +84,7 @@ struct AuthView: View {
                 Button(creating ? preferences.text("Já tens conta? Entrar","Already have an account? Sign in"):preferences.text("Ainda não tens conta? Criar conta","New here? Create an account")) {creating.toggle();message=nil;error=nil}.font(.caption).frame(maxWidth:.infinity)
                 Button(preferences.text("Esqueci-me da palavra-passe","Forgot password")) {recovering=true;creating=false;password="";error=nil;message=nil}.font(.caption).foregroundStyle(.secondary).frame(maxWidth:.infinity)
             } else {
-                Button(preferences.text("Voltar ao início de sessão","Back to sign in")) {recovering=false;recoverySent=false;error=nil;message=nil}.font(.caption)
+                Button(preferences.text("Voltar ao início de sessão","Back to sign in")) {recovering=false;error=nil;message=nil}.font(.caption)
             }
             CreditLinks().frame(maxWidth:.infinity).padding(.top,8)
         }.panel().disabled(busy)
@@ -108,5 +105,28 @@ struct AuthView: View {
     private func run(_ operation:@escaping () async throws -> Void) {
         busy=true;error=nil;message=nil
         Task {defer{busy=false};do {try await operation()} catch{self.error=(error as? ServiceError)?.code ?? "service_unavailable"}}
+    }
+}
+/// Shown after a password-recovery link signs you in.
+struct NewPasswordView: View {
+    @EnvironmentObject private var preferences:Preferences
+    @EnvironmentObject private var account:Account
+    @State private var password=""
+    @State private var busy=false
+    @State private var error:String?
+    var body: some View {
+        VStack(alignment:.leading,spacing:16) {
+            Text(preferences.text("Nova palavra-passe","New password")).font(.system(.title2,design:.serif,weight:.semibold))
+            Text(preferences.text("Escolhe uma palavra-passe com pelo menos 8 caracteres.","Choose a password with at least 8 characters.")).font(.subheadline).foregroundStyle(.secondary)
+            SecureField(preferences.text("Nova palavra-passe","New password"),text:$password).textContentType(.newPassword)
+                .textFieldStyle(.plain).padding(14).background(.primary.opacity(0.05),in:RoundedRectangle(cornerRadius:10))
+            if let error {Text(preferences.error(error)).font(.caption).foregroundStyle(.red)}
+            Button {
+                busy=true;error=nil
+                Task {defer{busy=false};do {try await account.updatePassword(password)} catch{self.error=(error as? ServiceError)?.code ?? "service_unavailable"}}
+            } label:{HStack {if busy {ProgressView().controlSize(.small)};Text(preferences.text("Guardar","Save"))}}
+                .buttonStyle(GoldButton()).disabled(busy || password.count<8)
+            Button(preferences.text("Agora não","Not now")) {account.choosingPassword=false}.font(.caption).frame(maxWidth:.infinity)
+        }.padding(28).frame(minWidth:320,maxWidth:440)
     }
 }

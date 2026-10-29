@@ -4,9 +4,11 @@
 
 Create a dedicated Supabase project. Enable email/password sign-in and email confirmation. Set a password minimum of at least 8 characters. Configure production SMTP before inviting users; the default mail service is intended for limited testing.
 
-Add `ividipoker://auth/callback` to the allowed redirect URLs. Set the Site URL to a real HTTPS page that tells users their email has been confirmed and that they can return to the app.
+Set the Site URL to `ividipoker://auth/callback` and add the same address to the allowed redirect URLs.
 
-For the **Reset Password** email template, include `{{ .Token }}` as a visible one-time code. The app asks for this code and a new password. It verifies the code with type `recovery`, then updates the password. Configure expiry and rate limits in Supabase. Confirmation emails may keep their standard confirmation link.
+Password recovery and account confirmation use the standard email links. The link opens the app through the `ividipoker://` scheme, which signs the user in; after a recovery link the app asks for a new password. No template changes are needed.
+
+Supabase's built-in email service only delivers to members of your Supabase team and is heavily rate-limited. Before public release, either configure custom SMTP (Authentication → Emails → SMTP Settings) or turn off **Confirm email** so new accounts are active immediately. Password recovery for other people needs custom SMTP.
 
 Keep separate development and production projects. Do not enable anonymous sign-in for this app.
 

@@ -37,6 +37,8 @@ private enum SecureStore {
 }
 @MainActor final class Account: NSObject, ObservableObject, ASWebAuthenticationPresentationContextProviding {
     @Published private(set) var session: Session?
+    /// Set after a password-recovery link opens the app, until a new password is chosen.
+    @Published var choosingPassword=false
     private var webSession: ASWebAuthenticationSession?
     private var refreshTask: Task<Session, Error>?
     private(set) var generation=UUID()
@@ -52,13 +54,13 @@ private enum SecureStore {
         return UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.flatMap(\.windows).first(where: \.isKeyWindow) ?? ASPresentationAnchor()
         #endif
     }
-    private func request(_ path: String, body: [String:Any], method: String = "POST", token: String? = nil) async throws -> Data {
+    private func request(_ path: String, body: [String:Any]?, method: String = "POST", token: String? = nil) async throws -> Data {
         guard AppConfiguration.ready, let url=URL(string:AppConfiguration.authURL+"/auth/v1/"+path) else { throw ServiceError(code:"not_configured") }
         var req=URLRequest(url:url); req.httpMethod=method; req.timeoutInterval=20
         req.setValue(AppConfiguration.key,forHTTPHeaderField:"apikey")
         req.setValue("application/json",forHTTPHeaderField:"Content-Type")
         if let token { req.setValue("Bearer "+token,forHTTPHeaderField:"Authorization") }
-        req.httpBody=try JSONSerialization.data(withJSONObject:body)
+        if let body { req.httpBody=try JSONSerialization.data(withJSONObject:body) }
         let (data,response)=try await URLSession.shared.data(for:req)
         guard let http=response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
             let error=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any]
@@ -67,7 +69,10 @@ private enum SecureStore {
         return data
     }
     @discardableResult private func accept(_ data: Data, newAccount: Bool = true) throws -> Session {
-        var value=try JSONDecoder().decode(Session.self,from:data); value.savedAt=Date()
+        try store(JSONDecoder().decode(Session.self,from:data),newAccount:newAccount)
+    }
+    @discardableResult private func store(_ received: Session, newAccount: Bool = true) throws -> Session {
+        var value=received; value.savedAt=Date()
         try SecureStore.save(JSONEncoder().encode(value))
         if newAccount { refreshTask?.cancel(); refreshTask=nil; generation=UUID() }
         session=value
@@ -78,17 +83,27 @@ private enum SecureStore {
     }
     func signUp(name:String,email:String,password:String) async throws -> Bool {
         guard password.count>=8 else { throw ServiceError(code:"weak_password") }
-        let data=try await request("signup",body:["email":email.trimmingCharacters(in:.whitespacesAndNewlines),"password":password,"data":["display_name":name]])
+        let data=try await request("signup?redirect_to="+Self.callback,body:["email":email.trimmingCharacters(in:.whitespacesAndNewlines),"password":password,"data":["display_name":name]])
         if (try? JSONDecoder().decode(Session.self,from:data)) != nil { try accept(data); return true }
         return false
     }
-    func recover(email:String) async throws { _ = try await request("recover",body:["email":email.trimmingCharacters(in:.whitespacesAndNewlines)]) }
-    func reset(email:String,code:String,password:String) async throws {
+    private static let callback="ividipoker%3A%2F%2Fauth%2Fcallback"
+    func recover(email:String) async throws { _ = try await request("recover?redirect_to="+Self.callback,body:["email":email.trimmingCharacters(in:.whitespacesAndNewlines)]) }
+    /// Signs in from an email link (account confirmation or password recovery) that opened the app.
+    func open(_ url: URL) async throws {
+        guard url.scheme=="ividipoker", url.host=="auth", let fragment=url.fragment else { return }
+        let items=URLComponents(string:"?"+fragment)?.queryItems ?? []
+        func value(_ name: String) -> String? { items.first {$0.name==name}?.value }
+        if let failure=value("error_code") ?? value("error") { throw ServiceError(code:failure) }
+        guard let access=value("access_token"), let refresh=value("refresh_token") else { return }
+        let user=try JSONDecoder().decode(AccountUser.self,from:await request("user",body:nil,method:"GET",token:access))
+        try store(Session(access_token:access,refresh_token:refresh,expires_in:value("expires_in").flatMap(Double.init),user:user))
+        if value("type")=="recovery" { choosingPassword=true }
+    }
+    func updatePassword(_ password: String) async throws {
         guard password.count>=8 else { throw ServiceError(code:"weak_password") }
-        let data=try await request("verify",body:["email":email.trimmingCharacters(in:.whitespacesAndNewlines),"token":code.trimmingCharacters(in:.whitespacesAndNewlines),"type":"recovery"])
-        let recovered=try JSONDecoder().decode(Session.self,from:data)
-        _ = try await request("user",body:["password":password],method:"PUT",token:recovered.access_token)
-        try accept(data)
+        _ = try await request("user",body:["password":password],method:"PUT",token:await token())
+        choosingPassword=false
     }
     func token() async throws -> String {
         guard let session else { throw ServiceError(code:"authentication_required") }
@@ -114,7 +129,7 @@ private enum SecureStore {
         clear()
         if let value { _ = try? await request("logout?scope=local",body:[:],token:value) }
     }
-    func clear() { generation=UUID(); refreshTask?.cancel(); refreshTask=nil; SecureStore.clear(); session=nil }
+    func clear() { generation=UUID(); refreshTask?.cancel(); refreshTask=nil; SecureStore.clear(); session=nil; choosingPassword=false }
     /// A random nonce for Sign in with Apple: the hash goes to Apple, the original to Supabase to prove the token is ours.
     static func appleNonce() -> (raw: String, hashed: String) {
         var bytes=[UInt8](repeating:0,count:32)

@@ -24,6 +24,8 @@ jobs:
       - name: Check native models and server contract
         run: scripts/check-native.sh
       - name: Build macOS
-        run: xcodebuild -project iVidiPoker.xcodeproj -scheme iVidiPoker-macOS -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build
+        run: xcodebuild -project iVidiPoker.xcodeproj -scheme iVidiPoker-macOS -destination 'platform=macOS' -derivedDataPath build/dd CODE_SIGNING_ALLOWED=NO build
+      - name: Check that service settings reach Info.plist
+        run: for key in PokerAPIURL SupabaseURL SupabaseAnonKey; do /usr/libexec/PlistBuddy -c "Print :$key" build/dd/Build/Products/Debug/iVidiPoker-macOS.app/Contents/Info.plist; done
       - name: Build iOS
         run: xcodebuild -project iVidiPoker.xcodeproj -scheme iVidiPoker-iOS -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build

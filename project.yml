@@ -13,9 +13,6 @@ settings:
     INFOPLIST_FILE: Config/AppInfo.plist
     INFOPLIST_KEY_CFBundleDisplayName: iVidiPoker
     INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.card-games
-    INFOPLIST_KEY_PokerAPIURL: $(POKER_API_URL)
-    INFOPLIST_KEY_SupabaseURL: $(SUPABASE_URL)
-    INFOPLIST_KEY_SupabaseAnonKey: $(SUPABASE_ANON_KEY)
     ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     PRODUCT_BUNDLE_IDENTIFIER: dev.ividi.iVidiPoker
     ENABLE_HARDENED_RUNTIME: YES

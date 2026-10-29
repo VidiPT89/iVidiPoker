@@ -15,6 +15,8 @@ struct TableView: View {
     private var betTitle:String {table.currentBet==0 ? preferences.text("Apostar ","Bet "):preferences.text("Aumentar ","Raise ")}
     private var maxRaise:Int {(me?.stack ?? 0)+(me?.bet ?? 0)}
     private var minRaise:Int {min(maxRaise,table.currentBet+table.minRaise)}
+    /// After a hand the pot is empty, so show what was won instead of zero.
+    private var potShown:Int {table.phase=="showdown" ? table.winners.reduce(0) {$0+$1.amount} : table.pot}
     var body: some View {
         GeometryReader {geometry in
             ScrollView {
@@ -81,7 +83,7 @@ struct TableView: View {
                 }
                 VStack(alignment:.leading,spacing:3) {
                     Text(seat.id==account.userID ? preferences.text("Tu","You"):seat.name).font(.subheadline.weight(.semibold)).lineLimit(1)
-                    Text(seat.folded ? preferences.text("Fora desta mão","Folded"):seat.stack==0 && !table.betweenHands ? "All-in":seat.bot ? preferences.text("Computador","Computer"):preferences.text("Jogador","Player")).font(.caption2).foregroundStyle(.secondary)
+                    Text(seat.folded ? preferences.text("Fora desta mão","Folded"):seat.stack==0 && !table.betweenHands ? "All-in":seat.bot ? preferences.text("Computador","Computer"):preferences.text("Jogador","Player")).font(.caption2).foregroundStyle(.secondary).lineLimit(1).minimumScaleFactor(0.75)
                 }
                 Spacer(minLength:0)
             }
@@ -108,8 +110,8 @@ struct TableView: View {
             }.font(.system(size:10,weight:.semibold)).foregroundStyle(.white.opacity(0.45))
             VStack(spacing:7) {
                 Text(preferences.phase(table.phase)).font(.caption.weight(.semibold)).foregroundStyle(Brand.gold)
-                Text(table.pot.formatted()).font(.system(size:40,weight:.medium,design:.serif)).foregroundStyle(.white).contentTransition(.numericText())
-                Text(preferences.text("FICHAS NO POTE","CHIPS IN THE POT")).font(.system(size:9,weight:.bold)).tracking(3).foregroundStyle(.white.opacity(0.45))
+                Text(potShown.formatted()).font(.system(size:40,weight:.medium,design:.serif)).foregroundStyle(.white).contentTransition(.numericText())
+                Text(table.phase=="showdown" ? preferences.text("FICHAS GANHAS","CHIPS WON"):preferences.text("FICHAS NO POTE","CHIPS IN THE POT")).font(.system(size:9,weight:.bold)).tracking(3).foregroundStyle(.white.opacity(0.45))
             }
             HStack(spacing:8) {
                 ForEach(0..<5,id:\.self) {index in

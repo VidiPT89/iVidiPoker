@@ -128,6 +128,9 @@ struct TableView: View {
                     VStack(alignment:.leading,spacing:6) {
                         Text(preferences.text("A TUA MÃO","YOUR HAND")).font(.system(size:10,weight:.bold)).tracking(2)
                         Text(me.folded ? preferences.text("Desististe","You folded"):myTurn ? preferences.text("É a tua vez","Your turn"):preferences.text("Joga com calma.","Keep your cool.")).font(.caption)
+                        if table.handCategory>=0 && !me.folded {
+                            Text(preferences.category(table.handCategory)).font(.system(.subheadline,design:.serif,weight:.semibold)).foregroundStyle(Brand.gold)
+                        }
                     }.foregroundStyle(.white.opacity(0.7))
                     Spacer(minLength:0)
                 }.padding(.top,4).animation(reduceMotion ? nil:.spring(response:0.5,dampingFraction:0.8),value:table.hand)

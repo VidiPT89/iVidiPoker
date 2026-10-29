@@ -37,6 +37,7 @@ struct SettingsView: View {
                 }
                 Section(preferences.text("Privacidade","Privacy")) {
                     Text(preferences.text("A conta guarda o teu email e nome. As mesas guardam temporariamente as jogadas e as fichas. A sessão fica protegida no Porta-chaves deste dispositivo. Não usamos publicidade nem rastreadores.","Your account stores your email and name. Tables temporarily store moves and chips. Your session is protected in this device’s Keychain. We do not use advertising or trackers.")).font(.footnote).foregroundStyle(.secondary)
+                    Link(preferences.text("Política de privacidade","Privacy policy"),destination:URL(string:"https://github.com/VidiPT89/iVidiPoker/blob/main/PRIVACY.md")!)
                     Link(preferences.text("Contactar o criador","Contact the developer"),destination:URL(string:"mailto:ividi.dev@gmail.com")!)
                 }
             }.formStyle(.grouped)

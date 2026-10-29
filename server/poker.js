@@ -160,6 +160,7 @@ export function snapshot(r,id) {
   return {code:r.code,host:r.host,practice:r.practice,phase:r.phase,board:r.board,dealer:r.dealer,actor:r.actor,
     currentBet:r.currentBet,minRaise:r.minRaise,hand:r.hand,version:r.version,winners:r.winners,refunds:r.refunds,log:r.log,deadline:r.deadline,
     pot:r.phase==='showdown'?0:r.players.reduce((s,p)=>s+p.total,0),
+    handCategory:me.cards.length===2 && r.board.length>=3 ? Math.floor(rank([...me.cards,...r.board])/15**5) : -1,
     canRaise:r.actor>=0 && r.players[r.actor].id===id && bettingReopened(r,me) && me.bet+me.stack>r.currentBet && r.players.some(p=>p.id!==id && canAct(p)),
     players:r.players.map(p=>({id:p.id,name:p.name,stack:p.stack,bet:p.bet,folded:p.folded,bot:p.bot,
       cards:p.id===id || (r.phase==='showdown' && !p.folded && r.showdownRevealed===true) ? p.cards : []}))};

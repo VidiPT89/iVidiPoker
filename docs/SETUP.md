@@ -16,7 +16,7 @@ All three providers use Supabase's hosted OAuth flow. The app generates a random
 
 - **Google:** create a Web OAuth client in Google Cloud, configure the consent screen, and register `https://YOUR-PROJECT.supabase.co/auth/v1/callback` as its redirect URI. Enable Google in Supabase and enter the client ID and secret. Publish the consent screen when ready.
 - **Microsoft:** register an app in Microsoft Entra. Choose the supported account audience deliberately, including personal Microsoft accounts if wanted. Add the same Supabase callback as a Web redirect URI. Enable Azure in Supabase with the client ID, secret and tenant URL. The app requests the `email` scope.
-- **Apple:** create a Sign in with Apple Services ID, configure the domain and the Supabase HTTPS callback, and enter the Services ID and generated secret in Supabase. This implementation uses browser OAuth, not a native Apple identity-token flow. Rotate the Apple OAuth secret before it expires. Follow Apple's account deletion/token revocation requirements before App Store distribution; verify the project's Supabase/provider revocation behaviour rather than assuming deleting an Auth user revokes Apple consent.
+- **Apple:** the app uses the native Sign in with Apple button on iPhone, iPad and Mac. Enable the Sign in with Apple capability for the App ID `dev.ividi.iVidiPoker`, then enable Apple in Supabase and add `dev.ividi.iVidiPoker` to its **Client IDs**. The native flow sends Apple's identity token with a hashed nonce, so no Services ID or rotating client secret is needed. Follow Apple's account deletion and token revocation requirements before App Store distribution.
 
 Official guides:
 
@@ -28,34 +28,30 @@ Official guides:
 
 ## 3. Server
 
-Node.js 22.9 or newer is required. No npm dependencies are needed.
+The game server is a Cloudflare Worker with a single Durable Object that holds every table, keeps each table under its own storage key and saves changes before responding. It runs on the Workers Free plan: no server to keep awake and no cold starts. Node.js 22.9 or newer is needed for the tests and Wrangler.
 
 ```bash
 cd server
-cp .env.example .env
-# Fill in the values in .env using your editor.
 npm test
-npm start
+npx wrangler login
+# Edit SUPABASE_URL and SUPABASE_ANON_KEY in wrangler.toml (public values).
+npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY   # server-only, used for account deletion
+npm run deploy
 ```
 
-Environment variables:
+| Name | Kind | Purpose |
+|---|---|---|
+| `SUPABASE_URL` | Variable | HTTPS project URL |
+| `SUPABASE_ANON_KEY` | Variable | Public project key used to verify user sessions |
+| `SUPABASE_SERVICE_ROLE_KEY` | Secret | Server-only key for account deletion |
 
-| Name | Purpose |
-|---|---|
-| `PORT` | Listening port, default 8080 |
-| `SUPABASE_URL` | HTTPS project URL |
-| `SUPABASE_ANON_KEY` | Public project key used to verify user sessions |
-| `SUPABASE_SERVICE_ROLE_KEY` | Private server-only key for account deletion |
-| `DATA_FILE` | Writable private file for table snapshots |
-| `TRUST_PROXY` | Set to `1` only behind a reverse proxy that appends `X-Forwarded-For`, so address limits apply per client |
+For local development, copy `.dev.vars.example` to `.dev.vars` and run `npm start` (`wrangler dev`). Both files stay out of Git.
 
-Deploy the supplied Dockerfile to a service with HTTPS termination and a persistent volume mounted at `/data`. Inject environment variables using the host's secret settings. Do not expose the snapshot directory over HTTP: it includes unplayed cards and private hands.
+`GET /health` is public. Every table endpoint verifies the supplied access token with Supabase Auth; a verified token is reused for up to 30 seconds so that table polling does not query Supabase on every request. Requests are limited per client address (`CF-Connecting-IP`) and per account.
 
-Run **one server instance**. This initial implementation uses synchronous atomic file snapshots and in-process tables, not a distributed database or shared lock service. Horizontal scaling requires a shared transactional store and per-table concurrency control first. Host-level connection limits and a reverse-proxy rate limiter should complement the server's per-user and per-address limits.
+Bots and expired turns advance whenever a player polls the table, so idle tables cost nothing. Tables expire 24 hours after the last completed hand. The stored tables include unplayed cards and private hands; they are only reachable through the Durable Object. A lost Durable Object loses the virtual-chip tables, not the Supabase accounts.
 
-`GET /health` is public. Every table endpoint verifies the supplied access token with Supabase Auth; a verified token is reused for up to 30 seconds so that table polling does not query Supabase on every request. There are no guest or development authentication bypasses in the server.
-
-The server saves state before acknowledging mutations. On restart it reloads the file and resumes expired turns. Dormant tables expire after 24 hours once a hand is complete. Schedule restricted, encrypted backups of the volume if recovery beyond a server restart is needed. A lost volume loses the virtual-chip tables, not the Supabase accounts.
+The free plan allows 100,000 requests a day. Each seated player polls every 1.5 seconds, which is about 2,400 requests an hour.
 
 ## 4. App
 
@@ -67,10 +63,10 @@ Copy `Config/Local.xcconfig.example` to `Config/Local.xcconfig` and set:
 
 xcconfig treats `//` as a comment, so use the `$(SLASH)` notation shown in the example. Never add the service-role key or provider secrets to this file. It is ignored by Git.
 
-Run `xcodegen generate` if project sources change. Select the appropriate scheme, set your Apple signing team locally, and build. No developer team is hard-coded in the repository.
+Run `xcodegen generate` if project sources change. Select the appropriate scheme, set your Apple signing team locally, and build. Signing needs an App ID with the Sign in with Apple capability. No developer team is hard-coded in the repository.
 
 ## 5. Before public release
 
-Verify all four sign-in methods, email confirmation, recovery, refresh, sign-out and deletion with real test accounts. Complete the device checklist in [VALIDATION.md](VALIDATION.md). Publish a privacy policy describing Supabase, hosting, retention and account deletion, and configure App Store privacy disclosures and the appropriate simulated-gambling age rating. Check Apple's current sign-in and account-deletion requirements with the actual provider configuration.
+Verify all four sign-in methods, email confirmation, recovery, refresh, sign-out and deletion with real test accounts. Complete the device checklist in [VALIDATION.md](VALIDATION.md). The privacy policy is [PRIVACY.md](../PRIVACY.md); keep it in line with the App Store privacy answers, and configure App Store privacy disclosures and the appropriate simulated-gambling age rating. Check Apple's current sign-in and account-deletion requirements with the actual provider configuration.
 
 The app is a virtual-chip social game. No real-money wallet, payment flow or gambling service is implemented.

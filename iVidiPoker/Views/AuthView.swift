@@ -1,4 +1,5 @@
 import SwiftUI
+import AuthenticationServices
 
 struct AuthView: View {
     @EnvironmentObject private var preferences:Preferences
@@ -13,6 +14,8 @@ struct AuthView: View {
     @State private var busy=false
     @State private var message:String?
     @State private var error:String?
+    @State private var appleNonce=""
+    @Environment(\.colorScheme) private var scheme
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
@@ -69,10 +72,17 @@ struct AuthView: View {
             }.buttonStyle(GoldButton()).disabled(busy || email.isEmpty || (!recovering && password.isEmpty) || (!recovering && creating && name.trimmingCharacters(in:.whitespaces).isEmpty) || (recovering && recoverySent && (code.isEmpty || password.count<8)) || !AppConfiguration.ready)
             if !recovering {
                 HStack {Rectangle().frame(height:1);Text(preferences.text("ou continua com","or continue with")).fixedSize();Rectangle().frame(height:1)}.foregroundStyle(.secondary.opacity(0.5)).font(.caption)
+                SignInWithAppleButton(creating ? .signUp : .signIn) {request in
+                    let nonce=Account.appleNonce(); appleNonce=nonce.raw
+                    request.requestedScopes=[.fullName,.email]; request.nonce=nonce.hashed
+                } onCompletion: {result in
+                    let nonce=appleNonce
+                    run {try await account.signInWithApple(result,nonce:nonce)}
+                }.signInWithAppleButtonStyle(scheme == .dark ? .white : .black).frame(height:50).clipShape(RoundedRectangle(cornerRadius:14))
+                    .disabled(busy || !AppConfiguration.ready).id(scheme)
                 HStack(spacing:8) {
-                    provider("Apple","apple",icon:"apple.logo")
-                    provider("Google","google",icon:nil)
-                    provider("Microsoft","azure",icon:nil)
+                    provider("Google","google")
+                    provider("Microsoft","azure")
                 }
                 Button(creating ? preferences.text("Já tens conta? Entrar","Already have an account? Sign in"):preferences.text("Ainda não tens conta? Criar conta","New here? Create an account")) {creating.toggle();message=nil;error=nil}.font(.caption).frame(maxWidth:.infinity)
                 Button(preferences.text("Esqueci-me da palavra-passe","Forgot password")) {recovering=true;creating=false;password="";error=nil;message=nil}.font(.caption).foregroundStyle(.secondary).frame(maxWidth:.infinity)
@@ -89,10 +99,10 @@ struct AuthView: View {
             .textInputAutocapitalization(.never)
             #endif
     }
-    private func provider(_ title:String,_ id:String,icon:String?) -> some View {
+    private func provider(_ title:String,_ id:String) -> some View {
         Button {run {try await account.social(id)}} label:{
-            VStack(spacing:7) {if let icon {Image(systemName:icon).font(.title3)} else {Text(title=="Google" ? "G":"⊞").font(.title3.bold())};Text(title).font(.system(size:10,weight:.semibold))}
-                .frame(maxWidth:.infinity).frame(height:60).background(.primary.opacity(0.05),in:RoundedRectangle(cornerRadius:12))
+            HStack(spacing:8) {Text(title=="Google" ? "G":"⊞").font(.headline.bold());Text(title).font(.subheadline.weight(.semibold))}
+                .frame(maxWidth:.infinity).frame(height:50).background(.primary.opacity(0.05),in:RoundedRectangle(cornerRadius:14))
         }.buttonStyle(.plain).disabled(busy || !AppConfiguration.ready)
     }
     private func run(_ operation:@escaping () async throws -> Void) {

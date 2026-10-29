@@ -110,3 +110,10 @@ test('call log reports chips paid now rather than the accumulated street bet',()
  assert.equal(r.players[1].bet,10);act(r,'1','call',0,r.version);
  assert.equal(r.log.at(-1).amount,10);assert.equal(r.players[1].bet,20);
 });
+test('each player sees the category of their own best hand once the flop is out',()=>{
+ const r=table(2);start(r,'a');
+ assert.equal(snapshot(r,'a').handCategory,-1);
+ r.players[0].cards=cards('As Ad');r.players[1].cards=cards('7c 2d');r.board=cards('Ac 9h 4s');
+ assert.equal(snapshot(r,'a').handCategory,3);
+ assert.equal(snapshot(r,'1').handCategory,0);
+});

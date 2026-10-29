@@ -115,6 +115,26 @@ private enum SecureStore {
         if let value { _ = try? await request("logout?scope=local",body:[:],token:value) }
     }
     func clear() { generation=UUID(); refreshTask?.cancel(); refreshTask=nil; SecureStore.clear(); session=nil }
+    /// A random nonce for Sign in with Apple: the hash goes to Apple, the original to Supabase to prove the token is ours.
+    static func appleNonce() -> (raw: String, hashed: String) {
+        var bytes=[UInt8](repeating:0,count:32)
+        if SecRandomCopyBytes(kSecRandomDefault,bytes.count,&bytes) != errSecSuccess { bytes=(0..<32).map {_ in UInt8.random(in:0...255)} }
+        let raw=Data(bytes).base64URLEncoded
+        return (raw,SHA256.hash(data:Data(raw.utf8)).map {String(format:"%02x",$0)}.joined())
+    }
+    func signInWithApple(_ result: Result<ASAuthorization, Error>, nonce: String) async throws {
+        switch result {
+        case .failure(let error):
+            throw ServiceError(code:(error as? ASAuthorizationError)?.code == .canceled ? "cancelled" : "service_unavailable")
+        case .success(let authorization):
+            guard let credential=authorization.credential as? ASAuthorizationAppleIDCredential,
+                  let data=credential.identityToken, let token=String(data:data,encoding:.utf8) else { throw ServiceError(code:"service_unavailable") }
+            let session=try accept(await request("token?grant_type=id_token",body:["provider":"apple","id_token":token,"nonce":nonce]))
+            // Apple shares the name only on the first sign-in; keep it as the table name.
+            let name=PersonNameComponentsFormatter().string(from:credential.fullName ?? PersonNameComponents()).trimmingCharacters(in:.whitespaces)
+            if !name.isEmpty { _ = try? await request("user",body:["data":["display_name":name]],method:"PUT",token:session.access_token) }
+        }
+    }
     func social(_ provider: String) async throws {
         guard AppConfiguration.ready else { throw ServiceError(code:"not_configured") }
         var bytes=[UInt8](repeating:0,count:32)
@@ -123,7 +143,7 @@ private enum SecureStore {
         let challenge=Data(SHA256.hash(data:Data(verifier.utf8))).base64URLEncoded
         guard var url=URLComponents(string:AppConfiguration.authURL+"/auth/v1/authorize") else {throw ServiceError(code:"not_configured")}
         url.queryItems=[.init(name:"provider",value:provider),.init(name:"redirect_to",value:"ividipoker://auth/callback"),.init(name:"code_challenge",value:challenge),.init(name:"code_challenge_method",value:"s256")]
-        if provider=="azure" { url.queryItems?.append(.init(name:"scopes",value:"email")) }
+        if provider=="azure" { url.queryItems?.append(.init(name:"scopes",value:"email openid profile")) }
         guard let authorizationURL=url.url else {throw ServiceError(code:"not_configured")}
         defer {webSession=nil}
         let callback: URL = try await withCheckedThrowingContinuation { continuation in

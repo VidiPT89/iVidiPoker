@@ -4,7 +4,7 @@ DerivedData/
 *.xcuserstate
 xcuserdata/
 Config/Local.xcconfig
-server/.env
-server/data/
+server/.dev.vars
+server/.wrangler/
 node_modules/
 *.log

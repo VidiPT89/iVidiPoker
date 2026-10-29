@@ -4,16 +4,16 @@
 
 | Check | Command | Result |
 |---|---|---|
-| Engine, strategy and API tests | `cd server && npm test` | 34 passing |
+| Engine, strategy and API tests | `cd server && npm test` | 35 passing |
 | Every five-card hand (2,598,960) | `cd server && npm run test:exhaustive` | Passing, category counts match |
-| Native models against server snapshots | `scripts/check-native.sh` | 23 passing |
+| Native models against server snapshots | `scripts/check-native.sh` | 24 passing |
 | macOS and iOS builds | `xcodebuild … build` (see README) | Passing, no Swift warnings |
 
 The same checks run on every push through GitHub Actions.
 
 ### Engine
 
-Unique shuffled decks, all nine hand categories, ace-low straights, kickers, best five of seven cards, heads-up blind positions, the big-blind option, minimum raises, short all-ins that do not reopen raising, side pots, uncalled bets returned separately, split pots with odd chips, folds, turn timeouts and chip conservation across 100 randomly played hands. Hole cards stay frozen once a hand settles, so a player joining afterwards cannot see a previous winner's cards.
+Unique shuffled decks, each player's own hand category from the flop onwards, all nine hand categories, ace-low straights, kickers, best five of seven cards, heads-up blind positions, the big-blind option, minimum raises, short all-ins that do not reopen raising, side pots, uncalled bets returned separately, split pots with odd chips, folds, turn timeouts and chip conservation across 100 randomly played hands. Hole cards stay frozen once a hand settles, so a player joining afterwards cannot see a previous winner's cards.
 
 ### Computer opponents
 
@@ -21,7 +21,7 @@ The strategy only receives the same private view a player sees. Tests change the
 
 ### API
 
-Authentication on every table endpoint, table creation and joining, host-only dealing, private hole cards, reconnection through `/me`, duplicate and stale actions, malformed request bodies, identity-service outages reported as unavailable rather than signed out, account deletion locking the table, reuse of verified tokens while polling, proxy-aware rate limiting and a failing table rolling back without stopping the others. A real HTTP transport test checks the serialized private snapshot.
+The tests drive the Cloudflare Worker and its Durable Object end to end, with in-memory storage: authentication on every table endpoint, table creation and joining, host-only dealing, private hole cards, reconnection through `/me`, duplicate and stale actions, malformed request bodies, identity-service outages reported as unavailable rather than signed out, account deletion locking the table, reuse of verified tokens while polling, per-address rate limits, bots acting when a table is polled, a failing table rolling back on its own, and tables surviving a restart and being removed from storage when empty.
 
 ### App
 
@@ -36,4 +36,4 @@ Decoding of real server-generated snapshots, payouts and refunds, quick-bet sizi
 - Check six-player layouts, VoiceOver and large accessibility text sizes on physical devices.
 - Produce signed Release archives, host a privacy policy and complete the store metadata and age rating.
 
-The server is designed for a single instance with a persistent volume. Running several instances requires a shared transactional store and per-table locking first.
+All tables live in one Durable Object, which processes requests one at a time. The free plan's 100,000 requests a day is about 40 player-hours of polling.

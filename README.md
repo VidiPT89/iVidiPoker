@@ -14,9 +14,10 @@
 - ✅ Practice tables with three computer opponents that bet, raise, call and fold based on their own cards and the board
 - ✅ Server-controlled shuffling, private hole cards, turn validation and 45-second turn timers
 - ✅ Half-pot, pot and all-in shortcuts, with a slider for any legal raise
+- ✅ Your current hand (pair, two pair, flush…) shown from the flop onwards
 - ✅ Reconnect to your table and hand after closing the app or losing the connection
 - ✅ Email/password accounts with confirmation, password recovery and in-app account deletion
-- ✅ Sign in with Apple, Google or Microsoft, using PKCE and Keychain session storage
+- ✅ Native Sign in with Apple, plus Google and Microsoft with PKCE, and Keychain session storage
 - ✅ Animated community cards, haptic turn alert on iPhone and Reduce Motion support
 - ✅ VoiceOver names for every card in Portuguese and English
 - ✅ Runtime language switch: Português (PT-PT) and English
@@ -30,13 +31,13 @@
 
 | Category | Technology |
 |----------|------------|
-| Language | Swift 5.9, JavaScript (Node.js 22.9+) |
+| Language | Swift 5.9, JavaScript |
 | UI | SwiftUI |
 | Platforms | iOS 17+, iPadOS 17+, macOS 14+ |
 | Authentication | Supabase Auth, AuthenticationServices, PKCE, Keychain |
-| Game server | Node.js built-in HTTP and crypto modules, no dependencies |
+| Game server | Cloudflare Workers and Durable Objects, no npm dependencies |
 | Synchronisation | Authenticated HTTPS snapshots, 1.5-second polling |
-| Persistence | Atomic JSON snapshots on a persistent volume |
+| Persistence | Durable Object storage, one key per table |
 | Project | XcodeGen |
 | Tests | Node.js test runner, native Swift contract checks, GitHub Actions |
 
@@ -45,8 +46,8 @@
 ### Prerequisites
 
 - macOS with Xcode 15+
-- Node.js 22.9+ for the game server
-- A Supabase project and an HTTPS host for online play
+- Node.js 22.9+ for the server tests and Wrangler
+- A Supabase project and a Cloudflare account (both free plans) for online play
 
 ### Installation
 
@@ -63,7 +64,7 @@ Select `iVidiPoker-iOS` or `iVidiPoker-macOS` and build (`⌘R`). Choose your si
 ### Online services
 
 1. Follow [Service setup](docs/SETUP.md) to configure Supabase and the Apple, Google and Microsoft providers.
-2. Deploy `server/` with HTTPS and a persistent volume (a Dockerfile is included).
+2. Deploy `server/` to Cloudflare Workers with `npm run deploy`.
 3. Copy `Config/Local.xcconfig.example` to `Config/Local.xcconfig` and enter the public URLs and the public Supabase key.
 4. Rebuild the app, create an account, then create or join a table.
 

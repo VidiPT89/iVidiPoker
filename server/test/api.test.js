@@ -1,14 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Readable } from 'node:stream';
-import http from 'node:http';
-import { mkdtempSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-process.env.SUPABASE_URL='https://auth.test.invalid';
-process.env.SUPABASE_ANON_KEY='test-public-key';
-process.env.DATA_FILE=join(mkdtempSync(join(tmpdir(),'poker-tests-')),'rooms.json');
-delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+import worker, { Tables } from '../worker.js';
+
 let authFailure=0;
 let deleteResponse=null;
 let identityLookups=0;
@@ -17,19 +10,34 @@ globalThis.fetch=async (url,options)=>{
  identityLookups++;
  if(authFailure) return {ok:false,status:authFailure};
  const id=options.headers.Authorization.replace('Bearer ','');
- return {status:401,ok:['alice','bob','carol','david','eva','frank','grace'].includes(id),json:async()=>({id,user_metadata:{display_name:id}})};
+ return {status:401,ok:['alice','bob','carol','david','eva','frank','grace','henry'].includes(id),json:async()=>({id,user_metadata:{display_name:id}})};
 };
-const api=await import('../src.js');
-const {server,advanceTables}=api;
-async function request(method,path,id,body,headers={}) {
- const req=Readable.from(body===undefined?[]:[Buffer.from(JSON.stringify(body))]);
- req.url=path;req.method=method;req.headers={authorization:id?'Bearer '+id:'',...headers};req.socket={remoteAddress:'test'};
- return await new Promise(resolve=>{
-  const res={writeHead(status){this.status=status},end(data){resolve({status:this.status,data:JSON.parse(data)})}};
-  server.emit('request',req,res);
- });
+// In-memory stand-in for Durable Object storage; values are copied as the real storage serializes them.
+class Storage {
+ data=new Map();
+ async list({prefix}) {return new Map([...this.data].filter(([key])=>key.startsWith(prefix)).map(([key,value])=>[key,structuredClone(value)]));}
+ async put(entries) {for(const [key,value] of Object.entries(entries)) this.data.set(key,structuredClone(value));}
+ async delete(keys) {for(const key of keys) this.data.delete(key);}
 }
+const env={SUPABASE_URL:'https://auth.test.invalid',SUPABASE_ANON_KEY:'test-public-key'};
+async function boot(storage) {
+ let ready;
+ const tables=new Tables({storage,blockConcurrencyWhile(fn){ready=fn();}},env);
+ await ready;
+ return tables;
+}
+const storage=new Storage();
+let tables=await boot(storage);
+const namespace={idFromName:name=>name,get:()=>({fetch:request=>tables.fetch(request)})};
+async function request(method,path,id,body,ip='test') {
+ const headers={'CF-Connecting-IP':ip};
+ if(id) headers.Authorization='Bearer '+id;
+ const response=await worker.fetch(new Request('https://poker.test'+path,{method,headers,body:body===undefined?undefined:JSON.stringify(body)}),{...env,TABLES:namespace});
+ return {status:response.status,data:await response.json()};
+}
+
 test('authenticated API: create, join, privacy, authorization, stale actions and reconnect',async()=>{
+ assert.equal((await request('GET','/health')).data.status,'ok');
  assert.equal((await request('GET','/me')).status,401);
  const created=await request('POST','/rooms','alice',{practice:false});assert.equal(created.status,201);
  const code=created.data.code;
@@ -47,11 +55,11 @@ test('authenticated API: create, join, privacy, authorization, stale actions and
  const left=await request('POST','/rooms/'+code+'/leave','alice',{});assert.equal(left.data.error,'finish_hand_first');
  assert.equal((await request('POST','/account/delete','alice',{})).data.error,'deletion_unavailable');
 });
-
 test('upstream authentication outage is not reported as an expired account',async()=>{
+ const originalError=console.error;console.error=()=>{};
  authFailure=503;
  try {assert.equal((await request('GET','/me','outage-a')).status,503);}
- finally {authFailure=0;}
+ finally {authFailure=0;console.error=originalError;}
  authFailure=401;
  try {assert.equal((await request('GET','/me','outage-b')).status,401);}
  finally {authFailure=0;}
@@ -62,15 +70,10 @@ test('verified tokens are reused while polling instead of querying Supabase ever
  for(let i=0;i<5;i++) assert.equal((await request('GET','/me','carol')).status,200);
  assert.equal(identityLookups,before);
 });
-test('forwarded client addresses are only trusted when configured',async()=>{
- process.env.TRUST_PROXY='1';
- try {
-  for(let i=0;i<600;i++) await request('GET','/me','unknown-token',undefined,{'x-forwarded-for':'10.0.0.9'});
-  // Prepending a made-up address does not escape the limit; the proxy-appended address counts.
-  assert.equal((await request('GET','/me','carol',undefined,{'x-forwarded-for':'2.2.2.2, 10.0.0.9'})).status,429);
-  assert.equal((await request('GET','/me','carol',undefined,{'x-forwarded-for':'10.0.0.9, 3.3.3.3'})).status,200);
- } finally {delete process.env.TRUST_PROXY;}
- assert.equal((await request('GET','/me','carol',undefined,{'x-forwarded-for':'10.0.0.9'})).status,200);
+test('each client address has its own request limit',async()=>{
+ for(let i=0;i<600;i++) await request('GET','/me','unknown-token',undefined,'10.0.0.9');
+ assert.equal((await request('GET','/me','carol',undefined,'10.0.0.9')).status,429);
+ assert.equal((await request('GET','/me','carol',undefined,'10.0.0.10')).status,200);
 });
 test('malformed body types are rejected before creating a table',async()=>{
  for(const value of [null,[],42,'text']) {
@@ -82,59 +85,41 @@ test('malformed body types are rejected before creating a table',async()=>{
 test('deletion locks the table and uses current state after unrelated rollback',async()=>{
  const r=await request('POST','/rooms','david',{});const code=r.data.code;
  await request('POST','/rooms/'+code+'/join','eva',{});
- process.env.SUPABASE_SERVICE_ROLE_KEY='test-server-only-key';
+ tables.service.serviceKey='test-server-only-key';
  let resolveDelete;deleteResponse=new Promise(resolve=>{resolveDelete=resolve;});
  const pending=request('POST','/account/delete','david',{});
- await new Promise(resolve=>setImmediate(resolve));
+ await new Promise(resolve=>setTimeout(resolve,10));
  assert.equal((await request('POST','/rooms/'+code+'/start','eva',{})).data.error,'table_busy');
- // A failed mutation on another table restores a cloned map while deletion awaits its provider.
+ // A failed mutation on another table rolls back while deletion awaits its provider.
  const other=(await request('GET','/me','alice')).data.room;
  assert.equal((await request('POST','/rooms/'+other.code+'/action','alice',{action:'check',version:-1})).status,400);
  resolveDelete({ok:true});assert.equal((await pending).status,200);
- deleteResponse=null;delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+ deleteResponse=null;tables.service.serviceKey=undefined;
  const survivor=(await request('GET','/me','eva')).data.room;
  assert.equal(survivor.host,'eva');assert.equal(survivor.players.length,1);
  assert.equal(survivor.players[0].id,'eva');assert.deepEqual(survivor.log,[]);
  assert.equal((await request('GET','/me','david')).data.room,null);
 });
-
-test('real HTTP transport enforces authentication and serializes private snapshots',async t=>{
- try {
-  await new Promise((resolve,reject)=>{
-   const failed=error=>reject(error);
-   server.once('error',failed);
-   server.listen(0,'127.0.0.1',()=>{server.off('error',failed);resolve();});
-  });
- } catch(error) {
-  if(error.code==='EPERM' || error.code==='EACCES') {t.skip('Local sockets are not available');return;}
-  throw error;
- }
- const get=(path,token)=>new Promise((resolve,reject)=>{
-  const req=http.get({hostname:'127.0.0.1',port:server.address().port,path,headers:token?{Authorization:'Bearer '+token}:{}},response=>{
-   let data='';response.on('data',chunk=>{data+=chunk});response.on('end',()=>resolve({status:response.statusCode,data:JSON.parse(data)}));
-  });req.on('error',reject);
- });
- try {
-  assert.equal((await get('/health')).data.status,'ok');
-  assert.equal((await get('/me')).status,401);
-  const response=await get('/me','alice');assert.equal(response.status,200);
-  assert.equal(response.data.room.players[1].cards.length,0);
- } finally {await new Promise(resolve=>server.close(resolve));}
-});
-
-test('a failing table rolls back alone and does not stop the other tables',async()=>{
- const healthy=await request('POST','/rooms','frank',{practice:true});
- const broken=await request('POST','/rooms','grace',{practice:true});
- await request('POST','/rooms/'+healthy.data.code+'/start','frank',{});
- await request('POST','/rooms/'+broken.data.code+'/start','grace',{});
- const healthyBefore=(await request('GET','/rooms/'+healthy.data.code,'frank')).data;
- const brokenBefore=(await request('GET','/rooms/'+broken.data.code,'grace')).data;
+test('bots act when the table is polled, and a failing table rolls back alone',async()=>{
+ const healthy=(await request('POST','/rooms','frank',{practice:true})).data.code;
+ const broken=(await request('POST','/rooms','grace',{practice:true})).data.code;
+ const before={};
+ for(const [code,id] of [[healthy,'frank'],[broken,'grace']]) before[code]=(await request('POST','/rooms/'+code+'/start',id,{})).data.version;
+ // A bot without cards makes its strategy throw.
+ tables.service.rooms.get(broken).players.forEach(p=>{if(p.bot) p.cards=[];});
+ for(const code of [healthy,broken]) tables.service.rooms.get(code).deadline=Date.now()-1;
  const originalError=console.error;console.error=()=>{};
  try {
-  // A bot without cards makes its strategy throw; the healthy table must still advance.
-  api.rooms.get(broken.data.code).players.forEach(p=>{if(p.bot) p.cards=[];});
-  advanceTables(Date.now()+60000);
+  assert.ok((await request('GET','/rooms/'+healthy,'frank')).data.version>before[healthy]);
+  const stuck=await request('GET','/rooms/'+broken,'grace');
+  assert.equal(stuck.status,200);assert.equal(stuck.data.version,before[broken]);
  } finally {console.error=originalError;}
- assert.ok((await request('GET','/rooms/'+healthy.data.code,'frank')).data.version>healthyBefore.version);
- assert.equal((await request('GET','/rooms/'+broken.data.code,'grace')).data.version,brokenBefore.version);
+});
+test('tables are saved, survive a restart and are removed from storage when empty',async()=>{
+ const code=(await request('POST','/rooms','henry',{})).data.code;
+ assert.ok(storage.data.has('room:'+code));
+ tables=await boot(storage);
+ assert.equal((await request('GET','/me','henry')).data.room.code,code);
+ assert.equal((await request('POST','/rooms/'+code+'/leave','henry',{})).status,200);
+ assert.equal(storage.data.has('room:'+code),false);
 });

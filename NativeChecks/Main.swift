@@ -14,6 +14,7 @@ import Foundation
         check(live.players.count==3,"Three-player snapshot")
         check(live.players[0].cards.count==2,"Own cards available")
         check(live.players.dropFirst().allSatisfy{$0.cards.isEmpty},"Private opponent cards")
+        check(live.handCategory == -1,"No hand category before the flop")
         check(live.suggestedRaise(for:live.players[0],fraction:0.5)==45,"Half-pot raise includes the call")
         check(live.suggestedRaise(for:live.players[0],fraction:1)==70,"Pot raise includes the call")
         let short=Seat(id:"short",name:"Short",stack:30,bet:0,folded:false,bot:false,cards:[])

@@ -44,6 +44,8 @@ struct PokerTable: Codable {
     let deadline: Double
     let pot: Int
     let canRaise: Bool
+    /// Category of your own best hand once the flop is out, otherwise -1.
+    let handCategory: Int
     let players: [Seat]
     var betweenHands: Bool { phase == "waiting" || phase == "showdown" }
     func suggestedRaise(for player: Seat, fraction: Double) -> Int {

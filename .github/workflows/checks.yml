@@ -1,0 +1,29 @@
+name: Checks
+on:
+  push:
+  pull_request:
+jobs:
+  server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm test
+        working-directory: server
+      - run: npm run test:exhaustive
+        working-directory: server
+  apple:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check native models and server contract
+        run: scripts/check-native.sh
+      - name: Build macOS
+        run: xcodebuild -project iVidiPoker.xcodeproj -scheme iVidiPoker-macOS -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build
+      - name: Build iOS
+        run: xcodebuild -project iVidiPoker.xcodeproj -scheme iVidiPoker-iOS -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build

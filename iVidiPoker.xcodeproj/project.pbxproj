@@ -1,0 +1,509 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0077FF823A35CD7510CC120A /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41FE8CC07496FCDEE81AB9F8 /* Account.swift */; };
+		26F29ADC3573469E66D414D0 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8602E20F1EAF391795E616 /* Models.swift */; };
+		3801038292FA7DEE76319336 /* iVidiPokerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DBBCC1CE221857C5F1CE312 /* iVidiPokerApp.swift */; };
+		4315601264DDC2AC0AEF8F13 /* TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF003A85D4E78E6DB95CAE9 /* TableView.swift */; };
+		43A9EF769012E2131045B467 /* TableStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D3511B9F2B92BD0E18BEB6 /* TableStore.swift */; };
+		45CFB9484E107DA2A4705481 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41FE8CC07496FCDEE81AB9F8 /* Account.swift */; };
+		4C6F5B8B5B44E09DCD9F471B /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8602E20F1EAF391795E616 /* Models.swift */; };
+		515A2937A5F24B80FB2F4352 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B32611EBEEE3EDB0289F47 /* SettingsView.swift */; };
+		6C90404F18E42564FAEFD98F /* Design.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CD9D18392D394E75FC3C /* Design.swift */; };
+		71F6C7A95A66DDF483CBBF0E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D78BE54C7F7FA3C681087D5C /* PrivacyInfo.xcprivacy */; };
+		777864929ED450DBAAF1FB93 /* LobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA196A6F05E392BA25DDECF /* LobbyView.swift */; };
+		8CD3B7D074FF18E15DFCE918 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA7C1A1406E8F2EECCB21EBB /* Assets.xcassets */; };
+		94409FFCDE1C505B0CF4894C /* TableStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D3511B9F2B92BD0E18BEB6 /* TableStore.swift */; };
+		A455282F84727323E5182DC0 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D78BE54C7F7FA3C681087D5C /* PrivacyInfo.xcprivacy */; };
+		A9823F802714C54AF4217E5A /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C1C76CA8E1B7B9C51892AC /* AuthView.swift */; };
+		B4FA5E3B7C2CD8FA526BE115 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA7C1A1406E8F2EECCB21EBB /* Assets.xcassets */; };
+		C2B15A96C5D23F7EA406B6D3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B32611EBEEE3EDB0289F47 /* SettingsView.swift */; };
+		D5091203A2E9C3BC04CE5296 /* LobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA196A6F05E392BA25DDECF /* LobbyView.swift */; };
+		D639666EBDCCBC4891580CF6 /* TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF003A85D4E78E6DB95CAE9 /* TableView.swift */; };
+		D798F329DC603ED0594938CC /* Design.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D2CD9D18392D394E75FC3C /* Design.swift */; };
+		D8A4FB6589261D7B31BC3CA4 /* iVidiPokerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DBBCC1CE221857C5F1CE312 /* iVidiPokerApp.swift */; };
+		E4BF0CEBE5E741EFE16B04B2 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C1C76CA8E1B7B9C51892AC /* AuthView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1F8602E20F1EAF391795E616 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		27D2CD9D18392D394E75FC3C /* Design.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Design.swift; sourceTree = "<group>"; };
+		41FE8CC07496FCDEE81AB9F8 /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
+		4D8F28616C9AC435AA245619 /* iVidiPoker-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iVidiPoker-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5DBBCC1CE221857C5F1CE312 /* iVidiPokerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iVidiPokerApp.swift; sourceTree = "<group>"; };
+		76C1C76CA8E1B7B9C51892AC /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
+		80D3511B9F2B92BD0E18BEB6 /* TableStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableStore.swift; sourceTree = "<group>"; };
+		8DF003A85D4E78E6DB95CAE9 /* TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableView.swift; sourceTree = "<group>"; };
+		B0A9B96C9A5E3B2220CD278C /* iVidiPoker-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iVidiPoker-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2179CC3B9F38FE835F97F44 /* Defaults.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Defaults.xcconfig; sourceTree = "<group>"; };
+		BA7C1A1406E8F2EECCB21EBB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C2BD99AC423896D711DED54D /* iVidiPoker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iVidiPoker.entitlements; sourceTree = "<group>"; };
+		D78BE54C7F7FA3C681087D5C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		E0B32611EBEEE3EDB0289F47 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		EDA196A6F05E392BA25DDECF /* LobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1D683429E62526D5274C090E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				BA7C1A1406E8F2EECCB21EBB /* Assets.xcassets */,
+				C2BD99AC423896D711DED54D /* iVidiPoker.entitlements */,
+				D78BE54C7F7FA3C681087D5C /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		8E047B26888E3FC679F85C87 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4D8F28616C9AC435AA245619 /* iVidiPoker-iOS.app */,
+				B0A9B96C9A5E3B2220CD278C /* iVidiPoker-macOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B4E873EAB1DEA05E7B45D98F /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				41FE8CC07496FCDEE81AB9F8 /* Account.swift */,
+				1F8602E20F1EAF391795E616 /* Models.swift */,
+				80D3511B9F2B92BD0E18BEB6 /* TableStore.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		C43A8882392DA9F22C95E22F /* iVidiPoker */ = {
+			isa = PBXGroup;
+			children = (
+				5DBBCC1CE221857C5F1CE312 /* iVidiPokerApp.swift */,
+				B4E873EAB1DEA05E7B45D98F /* Core */,
+				1D683429E62526D5274C090E /* Resources */,
+				EA449A8838582270E1D5A7A3 /* Views */,
+			);
+			path = iVidiPoker;
+			sourceTree = "<group>";
+		};
+		C4C10EFC947EC98286217BF9 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				B2179CC3B9F38FE835F97F44 /* Defaults.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		E8664D5BCE4FA9AF241D068E = {
+			isa = PBXGroup;
+			children = (
+				C4C10EFC947EC98286217BF9 /* Config */,
+				C43A8882392DA9F22C95E22F /* iVidiPoker */,
+				8E047B26888E3FC679F85C87 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EA449A8838582270E1D5A7A3 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				76C1C76CA8E1B7B9C51892AC /* AuthView.swift */,
+				27D2CD9D18392D394E75FC3C /* Design.swift */,
+				EDA196A6F05E392BA25DDECF /* LobbyView.swift */,
+				E0B32611EBEEE3EDB0289F47 /* SettingsView.swift */,
+				8DF003A85D4E78E6DB95CAE9 /* TableView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D80E7024011A2C711DA938ED /* iVidiPoker-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC259E536582CB5AB5FBF467 /* Build configuration list for PBXNativeTarget "iVidiPoker-iOS" */;
+			buildPhases = (
+				8AC5E844859DFEB7D5766A36 /* Sources */,
+				44597389D029070803F2AB09 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "iVidiPoker-iOS";
+			packageProductDependencies = (
+			);
+			productName = "iVidiPoker-iOS";
+			productReference = 4D8F28616C9AC435AA245619 /* iVidiPoker-iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		FE29C4CC533FA67CDE7C3621 /* iVidiPoker-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F01A20EEA6887D36A9FCE810 /* Build configuration list for PBXNativeTarget "iVidiPoker-macOS" */;
+			buildPhases = (
+				84914DA415D2674EAAF6C9B1 /* Sources */,
+				A8349C79E6E50F5FC0409386 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "iVidiPoker-macOS";
+			packageProductDependencies = (
+			);
+			productName = "iVidiPoker-macOS";
+			productReference = B0A9B96C9A5E3B2220CD278C /* iVidiPoker-macOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8D5AF5B5C909EF1953912B0D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					D80E7024011A2C711DA938ED = {
+						ProvisioningStyle = Automatic;
+					};
+					FE29C4CC533FA67CDE7C3621 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = CB321AF0329DB0D9E8C9B79F /* Build configuration list for PBXProject "iVidiPoker" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = E8664D5BCE4FA9AF241D068E;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 8E047B26888E3FC679F85C87 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D80E7024011A2C711DA938ED /* iVidiPoker-iOS */,
+				FE29C4CC533FA67CDE7C3621 /* iVidiPoker-macOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		44597389D029070803F2AB09 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8CD3B7D074FF18E15DFCE918 /* Assets.xcassets in Resources */,
+				71F6C7A95A66DDF483CBBF0E /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A8349C79E6E50F5FC0409386 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B4FA5E3B7C2CD8FA526BE115 /* Assets.xcassets in Resources */,
+				A455282F84727323E5182DC0 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		84914DA415D2674EAAF6C9B1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				45CFB9484E107DA2A4705481 /* Account.swift in Sources */,
+				E4BF0CEBE5E741EFE16B04B2 /* AuthView.swift in Sources */,
+				6C90404F18E42564FAEFD98F /* Design.swift in Sources */,
+				777864929ED450DBAAF1FB93 /* LobbyView.swift in Sources */,
+				4C6F5B8B5B44E09DCD9F471B /* Models.swift in Sources */,
+				C2B15A96C5D23F7EA406B6D3 /* SettingsView.swift in Sources */,
+				94409FFCDE1C505B0CF4894C /* TableStore.swift in Sources */,
+				D639666EBDCCBC4891580CF6 /* TableView.swift in Sources */,
+				D8A4FB6589261D7B31BC3CA4 /* iVidiPokerApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8AC5E844859DFEB7D5766A36 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0077FF823A35CD7510CC120A /* Account.swift in Sources */,
+				A9823F802714C54AF4217E5A /* AuthView.swift in Sources */,
+				D798F329DC603ED0594938CC /* Design.swift in Sources */,
+				D5091203A2E9C3BC04CE5296 /* LobbyView.swift in Sources */,
+				26F29ADC3573469E66D414D0 /* Models.swift in Sources */,
+				515A2937A5F24B80FB2F4352 /* SettingsView.swift in Sources */,
+				43A9EF769012E2131045B467 /* TableStore.swift in Sources */,
+				4315601264DDC2AC0AEF8F13 /* TableView.swift in Sources */,
+				3801038292FA7DEE76319336 /* iVidiPokerApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		39B66324B6661C2218BC2707 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = iVidiPoker/Resources/iVidiPoker.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/AppInfo.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = iVidiPoker;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
+				INFOPLIST_KEY_PokerAPIURL = "$(POKER_API_URL)";
+				INFOPLIST_KEY_SupabaseAnonKey = "$(SUPABASE_ANON_KEY)";
+				INFOPLIST_KEY_SupabaseURL = "$(SUPABASE_URL)";
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.ividi.iVidiPoker;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		7839A7062309266289077C6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = iVidiPoker/Resources/iVidiPoker.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/AppInfo.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = iVidiPoker;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
+				INFOPLIST_KEY_PokerAPIURL = "$(POKER_API_URL)";
+				INFOPLIST_KEY_SupabaseAnonKey = "$(SUPABASE_ANON_KEY)";
+				INFOPLIST_KEY_SupabaseURL = "$(SUPABASE_URL)";
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.ividi.iVidiPoker;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		86FB0FCE7F6D2FB719E25F99 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B2179CC3B9F38FE835F97F44 /* Defaults.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_KEY_CFBundleDisplayName = iVidiPoker;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A5409337A7E52963ECE7CECD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B2179CC3B9F38FE835F97F44 /* Defaults.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_KEY_CFBundleDisplayName = iVidiPoker;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D36BAB1074021DC1EFE97965 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B2179CC3B9F38FE835F97F44 /* Defaults.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Developed by David Arsénio Martins";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F08B77E0623FDD77148D3421 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B2179CC3B9F38FE835F97F44 /* Defaults.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Developed by David Arsénio Martins";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CB321AF0329DB0D9E8C9B79F /* Build configuration list for PBXProject "iVidiPoker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7839A7062309266289077C6E /* Debug */,
+				39B66324B6661C2218BC2707 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DC259E536582CB5AB5FBF467 /* Build configuration list for PBXNativeTarget "iVidiPoker-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A5409337A7E52963ECE7CECD /* Debug */,
+				86FB0FCE7F6D2FB719E25F99 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F01A20EEA6887D36A9FCE810 /* Build configuration list for PBXNativeTarget "iVidiPoker-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F08B77E0623FDD77148D3421 /* Debug */,
+				D36BAB1074021DC1EFE97965 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8D5AF5B5C909EF1953912B0D /* Project object */;
+}

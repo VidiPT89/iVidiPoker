@@ -1,0 +1,6 @@
+// Public app configuration. The slash variable preserves URL slashes in xcconfig.
+SLASH = /
+POKER_API_URL =
+SUPABASE_URL =
+SUPABASE_ANON_KEY =
+#include? "Local.xcconfig"

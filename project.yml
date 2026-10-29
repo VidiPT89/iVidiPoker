@@ -1,0 +1,57 @@
+name: iVidiPoker
+options:
+  bundleIdPrefix: dev.ividi
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    GENERATE_INFOPLIST_FILE: YES
+    INFOPLIST_FILE: Config/AppInfo.plist
+    INFOPLIST_KEY_CFBundleDisplayName: iVidiPoker
+    INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.card-games
+    INFOPLIST_KEY_PokerAPIURL: $(POKER_API_URL)
+    INFOPLIST_KEY_SupabaseURL: $(SUPABASE_URL)
+    INFOPLIST_KEY_SupabaseAnonKey: $(SUPABASE_ANON_KEY)
+    ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    PRODUCT_BUNDLE_IDENTIFIER: dev.ividi.iVidiPoker
+    ENABLE_HARDENED_RUNTIME: YES
+    CODE_SIGN_ENTITLEMENTS: iVidiPoker/Resources/iVidiPoker.entitlements
+targets:
+  iVidiPoker-iOS:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: [iVidiPoker]
+    configFiles:
+      Debug: Config/Defaults.xcconfig
+      Release: Config/Defaults.xcconfig
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: "1,2"
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+  iVidiPoker-macOS:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources: [iVidiPoker]
+    configFiles:
+      Debug: Config/Defaults.xcconfig
+      Release: Config/Defaults.xcconfig
+    settings:
+      base:
+        INFOPLIST_KEY_NSHumanReadableCopyright: Developed by David Arsénio Martins
+schemes:
+  iVidiPoker-iOS:
+    build:
+      targets:
+        iVidiPoker-iOS: all
+  iVidiPoker-macOS:
+    build:
+      targets:
+        iVidiPoker-macOS: all

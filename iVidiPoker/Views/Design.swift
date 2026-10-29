@@ -27,8 +27,8 @@ struct GoldButton: ButtonStyle {
     var secondary=false
     @Environment(\.isEnabled) private var enabled
     func makeBody(configuration:Configuration) -> some View {
-        configuration.label.font(.system(.body,design:.rounded,weight:.bold))
-            .padding(.horizontal,20).frame(minHeight:50).frame(maxWidth:.infinity)
+        configuration.label.font(.system(.body,design:.rounded,weight:.bold)).lineLimit(1).minimumScaleFactor(0.7)
+            .padding(.horizontal,12).frame(minHeight:50).frame(maxWidth:.infinity)
             .foregroundStyle(secondary ? Color.primary:Brand.ink)
             .background(secondary ? AnyShapeStyle(.primary.opacity(0.07)):AnyShapeStyle(Brand.gradient),in:RoundedRectangle(cornerRadius:14))
             .overlay(RoundedRectangle(cornerRadius:14).strokeBorder(secondary ? .primary.opacity(0.12):Brand.gold.opacity(0.4)))
